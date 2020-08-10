@@ -243,8 +243,8 @@ contract UFragmentsPolicy is Ownable {
         deviationThreshold = 5 * 10 ** (DECIMALS-2);
 
         rebaseLag = 30;
-        minRebaseTimeIntervalSec = 1 days;
-        rebaseWindowOffsetSec = 72000;  // 8PM UTC
+        minRebaseTimeIntervalSec = 23 hours;
+        rebaseWindowOffsetSec = 72000;  // first rebase at 8PM UTC
         rebaseWindowLengthSec = 15 minutes;
         lastRebaseTimestampSec = 0;
         epoch = 0;
