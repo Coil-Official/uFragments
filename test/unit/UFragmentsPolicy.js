@@ -83,7 +83,7 @@ contract('UFragmentsPolicy:initialize', async function (accounts) {
       (await uFragmentsPolicy.rebaseLag.call()).should.be.bignumber.eq(30);
     });
     it('minRebaseTimeIntervalSec', async function () {
-      (await uFragmentsPolicy.minRebaseTimeIntervalSec.call()).should.be.bignumber.eq(24 * 60 * 60);
+      (await uFragmentsPolicy.minRebaseTimeIntervalSec.call()).should.be.bignumber.eq(23 * 60 * 60);
     });
     it('epoch', async function () {
       (await uFragmentsPolicy.epoch.call()).should.be.bignumber.eq(0);

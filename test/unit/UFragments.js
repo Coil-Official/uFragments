@@ -13,7 +13,7 @@ function toUFrgDenomination (x) {
   return new BigNumber(x).mul(10 ** DECIMALS);
 }
 const DECIMALS = 9;
-const INTIAL_SUPPLY = toUFrgDenomination(50 * 10 ** 6);
+const INTIAL_SUPPLY = toUFrgDenomination(3 * 10 ** 6);
 const transferAmount = toUFrgDenomination(10);
 const unitTokenAmount = toUFrgDenomination(1);
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -63,8 +63,8 @@ contract('UFragments:Initialization', function (accounts) {
   });
 
   it('should set detailed ERC20 parameters', async function () {
-    expect(await uFragments.name.call()).to.eq('Ampleforth');
-    expect(await uFragments.symbol.call()).to.eq('AMPL');
+    expect(await uFragments.name.call()).to.eq('Coil');
+    expect(await uFragments.symbol.call()).to.eq('COIL');
     (await uFragments.decimals.call()).should.be.bignumber.eq(DECIMALS);
   });
 
@@ -73,9 +73,9 @@ contract('UFragments:Initialization', function (accounts) {
     decimals.should.be.bignumber.eq(DECIMALS);
   });
 
-  it('should have AMPL symbol', async function () {
+  it('should have COIL symbol', async function () {
     const symbol = await uFragments.symbol.call();
-    symbol.should.be.eq('AMPL');
+    symbol.should.be.eq('COIL');
   });
 });
 
@@ -119,6 +119,160 @@ contract('UFragments:setMonetaryPolicy:accessControl', function (accounts) {
   it('should NOT be callable by non-owner', async function () {
     expect(
       await chain.isEthException(uFragments.setMonetaryPolicy(policy, { from: user }))
+    ).to.be.true;
+  });
+});
+
+contract('UFragments:PauseRebase', function (accounts) {
+  const policy = accounts[1];
+  const A = accounts[2];
+  const B = accounts[3];
+
+  before('setup UFragments contract', async function () {
+    await setupContracts();
+    await uFragments.setMonetaryPolicy(policy, {from: deployer});
+    r = await uFragments.setRebasePaused(true);
+  });
+
+  it('should emit pause event', async function () {
+    const log = r.logs[0];
+    expect(log).to.exist;
+    expect(log.event).to.eq('LogRebasePaused');
+    expect(log.args.paused).to.be.true;
+  });
+
+  it('should not allow calling rebase', async function () {
+    expect(
+      await chain.isEthException(uFragments.rebase(1, toUFrgDenomination(500), { from: policy }))
+    ).to.be.true;
+  });
+
+  it('should allow calling transfer', async function () {
+    await uFragments.transfer(A, transferAmount, { from: deployer });
+  });
+
+  it('should allow calling approve', async function () {
+    await uFragments.approve(A, transferAmount, { from: deployer });
+  });
+
+  it('should allow calling allowance', async function () {
+    await uFragments.allowance.call(deployer, A);
+  });
+
+  it('should allow calling transferFrom', async function () {
+    await uFragments.transferFrom(deployer, B, transferAmount, {from: A});
+  });
+
+  it('should allow calling increaseAllowance', async function () {
+    await uFragments.increaseAllowance(A, transferAmount, {from: deployer});
+  });
+
+  it('should allow calling decreaseAllowance', async function () {
+    await uFragments.decreaseAllowance(A, 10, {from: deployer});
+  });
+
+  it('should allow calling balanceOf', async function () {
+    await uFragments.balanceOf.call(deployer);
+  });
+
+  it('should allow calling totalSupply', async function () {
+    await uFragments.totalSupply.call();
+  });
+});
+
+contract('UFragments:PauseRebase:accessControl', function (accounts) {
+  before('setup UFragments contract', setupContracts);
+
+  it('should be callable by owner', async function () {
+    expect(
+      await chain.isEthException(uFragments.setRebasePaused(true, { from: deployer }))
+    ).to.be.false;
+  });
+
+  it('should NOT be callable by non-owner', async function () {
+    expect(
+      await chain.isEthException(uFragments.setRebasePaused(true, { from: user }))
+    ).to.be.true;
+  });
+});
+
+contract('UFragments:PauseToken', function (accounts) {
+  const policy = accounts[1];
+  const A = accounts[2];
+  const B = accounts[3];
+
+  before('setup UFragments contract', async function () {
+    await setupContracts();
+    await uFragments.setMonetaryPolicy(policy, {from: deployer});
+    r = await uFragments.setTokenPaused(true);
+  });
+
+  it('should emit pause event', async function () {
+    const log = r.logs[0];
+    expect(log).to.exist;
+    expect(log.event).to.eq('LogTokenPaused');
+    expect(log.args.paused).to.be.true;
+  });
+
+  it('should allow calling rebase', async function () {
+    await uFragments.rebase(1, toUFrgDenomination(500), { from: policy });
+  });
+
+  it('should not allow calling transfer', async function () {
+    expect(
+      await chain.isEthException(uFragments.transfer(A, transferAmount, { from: deployer }))
+    ).to.be.true;
+  });
+
+  it('should not allow calling approve', async function () {
+    expect(
+      await chain.isEthException(uFragments.approve(A, transferAmount, { from: deployer }))
+    ).to.be.true;
+  });
+
+  it('should allow calling allowance', async function () {
+    await uFragments.allowance.call(deployer, A);
+  });
+
+  it('should not allow calling transferFrom', async function () {
+    expect(
+      await chain.isEthException(uFragments.transferFrom(deployer, B, transferAmount, {from: A}))
+    ).to.be.true;
+  });
+
+  it('should not allow calling increaseAllowance', async function () {
+    expect(
+      await chain.isEthException(uFragments.increaseAllowance(A, transferAmount, {from: deployer}))
+    ).to.be.true;
+  });
+
+  it('should not allow calling decreaseAllowance', async function () {
+    expect(
+      await chain.isEthException(uFragments.decreaseAllowance(A, transferAmount, {from: deployer}))
+    ).to.be.true;
+  });
+
+  it('should allow calling balanceOf', async function () {
+    await uFragments.balanceOf.call(deployer);
+  });
+
+  it('should allow calling totalSupply', async function () {
+    await uFragments.totalSupply.call();
+  });
+});
+
+contract('UFragments:PauseToken:accessControl', function (accounts) {
+  before('setup UFragments contract', setupContracts);
+
+  it('should be callable by owner', async function () {
+    expect(
+      await chain.isEthException(uFragments.setTokenPaused(true, { from: deployer }))
+    ).to.be.false;
+  });
+
+  it('should NOT be callable by non-owner', async function () {
+    expect(
+      await chain.isEthException(uFragments.setTokenPaused(true, { from: user }))
     ).to.be.true;
   });
 });
