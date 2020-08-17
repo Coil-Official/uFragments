@@ -13,7 +13,7 @@ The official mainnet addresses are:
 - ERC-20 Token: [0x3936Ad01cf109a36489d93cabdA11cF062fd3d48](https://etherscan.io/token/0x3936Ad01cf109a36489d93cabdA11cF062fd3d48)
 - Supply Policy: [0x7f0C14F2F72ca782Eea2835B9f63d3833B6669Ab](https://etherscan.io/address/0x7f0C14F2F72ca782Eea2835B9f63d3833B6669Ab)
 - Orchestrator: [0x8A6d3D3a1b9648BbedDE7899f2B1E7410Fda2D75](https://etherscan.io/address/0x8A6d3D3a1b9648BbedDE7899f2B1E7410Fda2D75)
-- Market Oracle: [0x99c9775e076fdf99388c029550155032ba2d8914](https://etherscan.io/address/0x99c9775e076fdf99388c029550155032ba2d8914)
+- Market Oracle: [0x90f98A4e55B2B07e46976e50885E1286B13aae8F](https://etherscan.io/address/0x90f98A4e55B2B07e46976e50885E1286B13aae8F)
 - CPI Oracle: [0xa759f960dd59a1ad32c995ecabe802a0c35f244f](https://etherscan.io/address/0xa759f960dd59a1ad32c995ecabe802a0c35f244f)
 
 ## Table of Contents
